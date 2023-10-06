@@ -1,9 +1,6 @@
-import 'dart:js';
-
 import 'package:bastionweb/datalogic.dart';
+import 'package:bastionweb/widgets/request.dart';
 import 'package:flutter/material.dart';
-
-import 'datamodel.dart';
 
 void main() {
   runApp(const BastionWeb());
@@ -14,173 +11,164 @@ class BastionWeb extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    DataLogic dataLogic = DataLogic();
     return MaterialApp(
       title: 'Bastion Web Demo',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrangeAccent),
         useMaterial3: true,
       ),
-      home: const MainWidget(title: 'Bastion Web'),
+      home: MainWidget(
+        title: 'Bastion Web',
+        dataLogic: dataLogic,
+      ),
     );
   }
 }
 
 class MainWidget extends StatefulWidget {
-  const MainWidget({super.key, required this.title});
+  const MainWidget({super.key, required this.title, required this.dataLogic});
 
   final String title;
+  final DataLogic dataLogic;
 
   @override
   State<MainWidget> createState() => _MainWidgetState();
 }
 
 class _MainWidgetState extends State<MainWidget> {
-  int _sortIndex = 0;
-  bool _asc = false;
+  bool _isAuthorized = false;
 
-  final datalogic = DataLogic();
+  var loginTextController = TextEditingController();
+  var pwdTextController = TextEditingController();
 
-  bool _isLoading = false;
-
-  void _update() {
-    getData();
-  }
-
-  late List<Person> data;
-
-  @override
-  void initState() {
-    super.initState();
-    getData();
-  }
-
-  Future<void> getData() async {
-    setState(() {
-      _isLoading = true;
+  login(String login, String pwd, BuildContext context) {
+    widget.dataLogic
+        .login(login, pwd)
+        .then((value) => {
+              value
+                  ? setState(() {
+                      _isAuthorized = value;
+                    })
+                  : showError("Введены неверные данные", context)
+            })
+        .catchError((e) {
+      showError(e.toString(), context);
     });
-    data = await datalogic.getPersonList();
+  }
+
+  void reLogin() {
     setState(() {
-      _isLoading = false;
+      _isAuthorized = false;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return _isLoading
-        ? Scaffold(
-            appBar: AppBar(
-              backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-              title: Text(
-                widget.title,
-                style: Theme.of(context).textTheme.headlineLarge,
-              ),
-            ),
-            body: Center(child: CircularProgressIndicator()))
-        : Scaffold(
-            appBar: AppBar(
-              backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-              title: Text(
-                widget.title,
-                style: Theme.of(context).textTheme.headlineLarge,
-              ),
-            ),
-            body: SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              child: Container(
-                padding: EdgeInsets.all(10),
-                alignment: Alignment.center,
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    return DataTable(
-                      sortAscending: _asc,
-                      sortColumnIndex: _sortIndex,
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: Colors.black45,
-                          width: 3,
-                        ),
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(10.0)),
+    return Stack(children: <Widget>[
+      Image.asset(
+        "resources/background.png",
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+        fit: BoxFit.cover,
+      ),
+      _isAuthorized
+          ? Scaffold(
+              backgroundColor: Colors.transparent,
+              drawer: Drawer(
+                  backgroundColor: const Color.fromRGBO(255, 255, 255, 100.0),
+                  child: ListView(
+                    // Important: Remove any padding from the ListView.
+                    padding: EdgeInsets.zero,
+                    children: [
+                      const DrawerHeader(
+                        decoration: BoxDecoration(
+                            color: Color.fromRGBO(255, 110, 64, 100.0)),
+                        child: Text('Bastion'),
                       ),
-                      columns: [
-                        DataColumn(
-                            label: const Text(
-                              'Фамилия',
-                              textAlign: TextAlign.center,
-                            ),
-                            onSort: (ind, dir) {
-                              _sort(ind, dir);
-                            }),
-                        DataColumn(
-                            label: const Text(
-                              'Имя',
-                              textAlign: TextAlign.center,
-                            ),
-                            onSort: (ind, dir) {
-                              _sort(ind, dir);
-                            }),
-                        DataColumn(
-                            label: const Text(
-                              'Отчество',
-                              textAlign: TextAlign.center,
-                            ),
-                            onSort: (ind, dir) {
-                              _sort(ind, dir);
-                            }),
-                      ],
-                      rows: data
-                          .map((e) => DataRow(
-                                cells: [
-                                  DataCell(
-                                    Container(
-                                      padding: const EdgeInsets.all(10),
-                                      child: Text(e.surname),
-                                    ),
-                                  ),
-                                  DataCell(Container(
-                                    padding: const EdgeInsets.all(10),
-                                    child: Text(e.name),
-                                  )),
-                                  DataCell(Container(
-                                    padding: const EdgeInsets.all(10),
-                                    child: Text(e.middlename),
-                                  )),
-                                ],
-                              ))
-                          .toList(),
-                    );
-                  },
+                      ListTile(
+                          leading: const Icon(Icons.login),
+                          title: const Text(
+                            'Сменить пользователя',
+                            textScaleFactor: 1.2,
+                          ),
+                          onTap: () => {Navigator.pop(context), reLogin()}),
+                    ],
+                  )),
+              appBar: AppBar(
+                backgroundColor: const Color.fromRGBO(255, 110, 64, 150.0),
+                title: Text(
+                  widget.title,
+                  style: Theme.of(context).textTheme.headlineLarge,
                 ),
               ),
-            ),
-            floatingActionButton: IconButton(
-                onPressed: () => _update(), icon: const Icon(Icons.update)),
-          );
+              body: RequestsWidget(
+                dataLogic: widget.dataLogic,
+              ),
+            )
+          : Scaffold(
+              backgroundColor: Colors.transparent,
+              body: Center(
+                child: Card(
+                  color: const Color.fromRGBO(255, 255, 255, 170.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                          padding: const EdgeInsets.all(10),
+                          child: const Text(
+                            "Авторизация",
+                            textScaleFactor: 2.0,
+                          )),
+                      Container(
+                          padding: const EdgeInsets.all(10),
+                          constraints: const BoxConstraints(maxWidth: 300),
+                          child: TextField(
+                            controller: loginTextController,
+                            decoration: const InputDecoration(
+                                hintText: "Введите логин"),
+                            onEditingComplete: () => {
+                              login(loginTextController.text,
+                                      pwdTextController.text, context)
+                                  .then((value) => null)
+                            },
+                          )),
+                      Container(
+                          padding: const EdgeInsets.all(10),
+                          constraints: const BoxConstraints(maxWidth: 300),
+                          child: TextField(
+                            controller: pwdTextController,
+                            onEditingComplete: () => {
+                              login(loginTextController.text,
+                                      pwdTextController.text, context)
+                                  .then((value) => null)
+                            },
+                            decoration: const InputDecoration(
+                                hintText: "Введите пароль"),
+                          )),
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        child: ElevatedButton(
+                            onPressed: () => {
+                                  login(loginTextController.text,
+                                      pwdTextController.text, context)
+                                },
+                            child: const Text(
+                              "Вход",
+                              textScaleFactor: 1.5,
+                            )),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            )
+    ]);
   }
 
-  void _sort(int ind, bool dir) {
-    setState(() {
-      _asc = dir;
-      _sortIndex = ind;
-      switch (_sortIndex) {
-        case 0:
-          {
-            data.sort((a, b) => a.surname.compareTo(b.surname));
-          }
-        case 1:
-          {
-            data.sort((a, b) => a.name.compareTo(b.name));
-          }
-        case 2:
-          {
-            data.sort((a, b) => a.middlename.compareTo(b.middlename));
-          }
-        default:
-          {
-            data.sort((a, b) => a.surname.compareTo(b.surname));
-          }
-      }
-      !_asc ? data = data.reversed.toList() : {};
-    });
+  showError(String text, BuildContext context) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text("Ошибка: $text")));
   }
 }
