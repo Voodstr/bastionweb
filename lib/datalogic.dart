@@ -1,19 +1,23 @@
 import 'dart:convert';
 import 'package:bastionweb/datamodel.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class DataLogic {
   String postgresAddress = "http://192.168.1.56:3000";
   String listLink = "/rpc/postgrest_prstest";
+  String loginLink = "/rpc/login";
+  String _token = "";
   bool _isAuthorized = false;
 
-  Future<List<Person>> getPersonList()async{
+  Future<List<PersonModel>> getPersonList() async {
+    if (_isAuthorized||_token.length>10){
     try {
-      final response = await http.get(Uri.parse(postgresAddress+listLink));
+      final response = await http.post(Uri.parse(postgresAddress + listLink),headers: {"Authorization":"Bearer $_token"});
       if (response.statusCode == 200) {
-        List<Person> list = (json.decode(response.body) as List)
-            .map((data) => Person.fromJson(data))
+        List<PersonModel> list = (json.decode(response.body) as List)
+            .map((data) => PersonModel.fromJson(data))
             .toList();
         return list;
       } else {
@@ -24,18 +28,56 @@ class DataLogic {
         print('error caught: $e');
       }
       return Future.error('error caught: $e');
-    }
-    return [Person("surname", "name", "middlename")];
-  }
-
-  Future<bool> login(String login, String pwd) async{
-    if(login=="admin"&&pwd=="123") {
-      _isAuthorized = true;
-      return true;
-    }else {
-      return false;
+    }}
+    else {
+      print("token = $_token");
+      return Future.error('error caught: NOT AUTHORIZED');
     }
   }
 
+  Future<List<PersonModel>> getMockedPersonList() async {
+    Future.delayed(const Duration(seconds: 5));
+    return (json.decode(_mockedList) as List)
+        .map((data) => PersonModel.fromJson(data))
+        .toList();
+  }
 
+  final String _mockedList = '['
+      '{"Фамилия":"Самый","Имя":"Главный","Отчество":"Начальник"},'
+      '{"Фамилия":"Самый","Имя":"Обычный","Отчество":"Сотрудник"},'
+      '{"Фамилия":"Самый","Имя":"Мелкий","Отчество":"Подчиненный"},'
+      '{"Фамилия":"1231Иванов","Имя":"Bfsa","Отчество":"Sfdsf"},'
+      '{"Фамилия":"Иванов","Имя":"2","Отчество":"Ivanich"},'
+      '{"Фамилия":"Иванов","Имя":"Иван","Отчество":"Иванович"},'
+      '{"Фамилия":"Иванов","Имя":"Сергей","Отчество":null},'
+      '{"Фамилия":"Иванов","Имя":"Петр","Отчество":null},'
+      '{"Фамилия":"Иванов","Имя":"Владимир","Отчество":null},'
+      '{"Фамилия":"Иванов","Имя":"Петр","Отчество":null}]';
+
+  Future<bool> login(String login, String pwd) async {
+    try {
+      final response = await http.post(Uri.parse(postgresAddress + loginLink),
+          headers: {"Content-Type":"application/json"},
+          body: '{ "username": "$login", "password": "$pwd" }');
+      if (response.statusCode == 200) {
+        setToken(jsonDecode(response.body)['token']);
+        _isAuthorized=true;
+        return true;
+      } else {
+        _isAuthorized = false;
+        return Future.error("response error: ${response.statusCode}");
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('error caught: $e');
+      }
+      _isAuthorized = false;
+      return Future.error('error caught: $e');
+    }
+  }
+  void setToken(String tkn){
+    print("setToken");
+    _token = tkn;
+    print(_token);
+  }
 }

@@ -1,17 +1,25 @@
 import 'package:json_annotation/json_annotation.dart';
 @JsonSerializable()
-class Person {
+class PersonModel {
   String surname;
   String name;
   String middlename;
-  Person(this.surname,this.name,this.middlename);
-  factory Person.fromJson(Map<String, dynamic> json) {
-    return Person(
+  List<String> param = ['Фамилия','Имя','Отчество'];
+  PersonModel(this.surname,this.name,this.middlename);
+  factory PersonModel.fromJson(Map<String, dynamic> json) {
+    return PersonModel(
       json['Фамилия'] ?? '',
       json['Имя'] ?? "",
       json['Отчество'] ?? ""
     );
   }
+}
+
+class RequestModel{
+  String fio;
+  String date;
+  bool status;
+  RequestModel(this.fio, this.date,this.status);
 }
 
 /*

@@ -67,6 +67,7 @@ flutter:
     - assets/
     - assets/resources/
     - assets/resources/background.png
+    - assets/resources/dark_background.png
   # assets:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
