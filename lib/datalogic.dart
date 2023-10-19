@@ -12,35 +12,38 @@ class DataLogic {
   bool _isAuthorized = false;
 
   Future<List<PersonModel>> getPersonList() async {
-    if (_isAuthorized||_token.length>10){
-    try {
-      final response = await http.post(Uri.parse(postgresAddress + listLink),headers: {"Authorization":"Bearer $_token"});
-      if (response.statusCode == 200) {
-        List<PersonModel> list = (json.decode(response.body) as List)
-            .map((data) => PersonModel.fromJson(data))
-            .toList();
-        return list;
+    if (kDebugMode) { //TODO remove test implementation GET_PERSON_LIST
+      Future.delayed(const Duration(seconds: 5));
+      return (json.decode(_mockedList) as List)
+          .map((data) => PersonModel.fromJson(data))
+          .toList();
+    } else {
+      if (_isAuthorized || _token.length > 10) {
+        try {
+          final response = await http.post(
+              Uri.parse(postgresAddress + listLink),
+              headers: {"Authorization": "Bearer $_token"});
+          if (response.statusCode == 200) {
+            List<PersonModel> list = (json.decode(response.body) as List)
+                .map((data) => PersonModel.fromJson(data))
+                .toList();
+            return list;
+          } else {
+            return Future.error("response error: ${response.statusCode}");
+          }
+        } catch (e) {
+          if (kDebugMode) {
+            print('error caught: $e');
+          }
+          return Future.error('error caught: $e');
+        }
       } else {
-        return Future.error("response error: ${response.statusCode}");
+        print("token = $_token");
+        return Future.error('error caught: NOT AUTHORIZED');
       }
-    } catch (e) {
-      if (kDebugMode) {
-        print('error caught: $e');
-      }
-      return Future.error('error caught: $e');
-    }}
-    else {
-      print("token = $_token");
-      return Future.error('error caught: NOT AUTHORIZED');
     }
   }
 
-  Future<List<PersonModel>> getMockedPersonList() async {
-    Future.delayed(const Duration(seconds: 5));
-    return (json.decode(_mockedList) as List)
-        .map((data) => PersonModel.fromJson(data))
-        .toList();
-  }
 
   final String _mockedList = '['
       '{"Фамилия":"Самый","Имя":"Главный","Отчество":"Начальник"},'
@@ -55,13 +58,17 @@ class DataLogic {
       '{"Фамилия":"Иванов","Имя":"Петр","Отчество":null}]';
 
   Future<bool> login(String login, String pwd) async {
+    if(kDebugMode){  //TODO remove test implementation LOGIN
+      _isAuthorized = true;
+      return true;
+    }else{
     try {
       final response = await http.post(Uri.parse(postgresAddress + loginLink),
-          headers: {"Content-Type":"application/json"},
+          headers: {"Content-Type": "application/json"},
           body: '{ "username": "$login", "password": "$pwd" }');
       if (response.statusCode == 200) {
         setToken(jsonDecode(response.body)['token']);
-        _isAuthorized=true;
+        _isAuthorized = true;
         return true;
       } else {
         _isAuthorized = false;
@@ -73,11 +80,10 @@ class DataLogic {
       }
       _isAuthorized = false;
       return Future.error('error caught: $e');
-    }
+    }}
   }
-  void setToken(String tkn){
-    print("setToken");
+
+  void setToken(String tkn) {
     _token = tkn;
-    print(_token);
   }
 }

@@ -1,4 +1,5 @@
 import 'package:bastionweb/datalogic.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -36,7 +37,8 @@ class _PersonsStateWidget extends State<PersonsWidget> {
       _isError = false;
     });
     try {
-      persons = await widget.dataLogic.getPersonList();
+      persons =
+          await widget.dataLogic.getPersonList(); //TODO testing still here
       _isError = false;
     } catch (e) {
       setState(() {
@@ -198,7 +200,7 @@ class _PersonsStateWidget extends State<PersonsWidget> {
                                       fit: FlexFit.tight,
                                       flex: 3,
                                       child: Container(
-                                        padding: EdgeInsets.all(10),
+                                        padding: const EdgeInsets.all(10),
                                         child: Column(
                                           mainAxisAlignment:
                                               MainAxisAlignment.center,
@@ -211,15 +213,11 @@ class _PersonsStateWidget extends State<PersonsWidget> {
                                                     fit: BoxFit.contain,
                                                     child: Text(
                                                       persons[_selected]
-                                                          .surname,
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                    ))),
-                                            Flexible(
-                                                child: FittedBox(
-                                                    fit: BoxFit.contain,
-                                                    child: Text(
-                                                      persons[_selected].name,
+                                                          .surname
+                                                          .isNotEmpty
+                                                          ? persons[_selected]
+                                                          .surname
+                                                          : "     ",
                                                       textAlign:
                                                           TextAlign.center,
                                                     ))),
@@ -228,7 +226,24 @@ class _PersonsStateWidget extends State<PersonsWidget> {
                                                     fit: BoxFit.contain,
                                                     child: Text(
                                                       persons[_selected]
-                                                          .middlename,
+                                                          .name
+                                                          .isNotEmpty
+                                                          ? persons[_selected]
+                                                          .name
+                                                          : "     ",
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                    ))),
+                                            Flexible(
+                                                child: FittedBox(
+                                                    fit: BoxFit.contain,
+                                                    child: Text(
+                                                      persons[_selected]
+                                                              .middlename
+                                                              .isNotEmpty
+                                                          ? persons[_selected]
+                                                              .middlename
+                                                          : "     ",
                                                       textAlign:
                                                           TextAlign.center,
                                                     )))

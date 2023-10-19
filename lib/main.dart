@@ -22,7 +22,7 @@ class BastionWeb extends StatefulWidget {
 
 class _BastionWebState extends State<BastionWeb> {
   bool _isDarkTheme = false;
-  String pathToAppBackground = "assets/resources/dark_background.png";
+  String pathToAppBackground = "resources/dark_background.png";
 
   @override
   void initState() {
@@ -33,8 +33,8 @@ class _BastionWebState extends State<BastionWeb> {
     setState(() {
       _isDarkTheme = !_isDarkTheme;
       _isDarkTheme
-          ? pathToAppBackground = "assets/resources/background.png"
-          : pathToAppBackground = "assets/resources/dark_background.png";
+          ? pathToAppBackground = "resources/background.png"
+          : pathToAppBackground = "resources/dark_background.png";
     });
   }
 
@@ -126,8 +126,8 @@ class _MainWidgetState extends State<MainWidget> {
       MainView("Список персон", PersonsWidget(dataLogic: widget.dataLogic),
           const Icon(Icons.person)),
       MainView(
-          "Cоздание заявки", RequestWidget(), const Icon(Icons.request_page)),
-      MainView("Просмотр заявок", RequestListWidget(), const Icon(Icons.list))
+          "Cоздание заявки", const RequestWidget(), const Icon(Icons.request_page)),
+      MainView("Просмотр заявок", const RequestListWidget(), const Icon(Icons.list))
     ];
     super.initState();
   }
