@@ -1,7 +1,5 @@
 import 'package:bastionweb/datalogic.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 import '../datamodel.dart';
 
@@ -83,7 +81,7 @@ class _PersonsStateWidget extends State<PersonsWidget> {
     return _isError
         ? Center(
             child: Card(
-                color: const Color.fromRGBO(255, 255, 255, 150.0),
+                color: Theme.of(context).colorScheme.onBackground.withOpacity(0.5),
                 child: Column(mainAxisSize: MainAxisSize.min, children: [
                   Text(
                     _errorMsg,
@@ -113,8 +111,7 @@ class _PersonsStateWidget extends State<PersonsWidget> {
                               sortAscending: _asc,
                               sortColumnIndex: _sortIndex,
                               decoration: BoxDecoration(
-                                color:
-                                    const Color.fromRGBO(255, 255, 255, 150.0),
+                                color:Theme.of(context).cardColor.withOpacity(0.5),
                                 border: Border.all(
                                   color: Colors.black45,
                                   width: 3,
@@ -179,7 +176,7 @@ class _PersonsStateWidget extends State<PersonsWidget> {
                       flex: 2,
                       fit: FlexFit.loose,
                       child: Container(
-                        color: const Color.fromRGBO(255, 255, 255, 150.0),
+                        color:Theme.of(context).cardColor.withOpacity(0.5),
                         child: Center(
                           child: Column(children: [
                             Flexible(
@@ -253,12 +250,12 @@ class _PersonsStateWidget extends State<PersonsWidget> {
                                 ],
                               ),
                             ),
-                            const Flexible(
+                             Flexible(
                               fit: FlexFit.tight,
                               flex: 3,
                               child: Card(
-                                color: Color.fromRGBO(255, 255, 255, 100.0),
-                                child: FittedBox(),
+                                color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
+                                child: const FittedBox(),
                               ),
                             )
                           ]),

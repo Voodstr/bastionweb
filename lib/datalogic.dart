@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:bastionweb/datamodel.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class DataLogic {
@@ -38,7 +37,9 @@ class DataLogic {
           return Future.error('error caught: $e');
         }
       } else {
-        print("token = $_token");
+        if (kDebugMode) {
+          print("token = $_token");
+        }
         return Future.error('error caught: NOT AUTHORIZED');
       }
     }
@@ -58,10 +59,12 @@ class DataLogic {
       '{"Фамилия":"Иванов","Имя":"Петр","Отчество":null}]';
 
   Future<bool> login(String login, String pwd) async {
-    if(kDebugMode){  //TODO remove test implementation LOGIN
+    /*if(kDebugMode){  //TODO remove test implementation LOGIN
       _isAuthorized = true;
       return true;
     }else{
+
+     */
     try {
       final response = await http.post(Uri.parse(postgresAddress + loginLink),
           headers: {"Content-Type": "application/json"},
@@ -80,7 +83,13 @@ class DataLogic {
       }
       _isAuthorized = false;
       return Future.error('error caught: $e');
-    }}
+    }
+  //}
+  }
+
+  void logout(){
+    _token = "";
+    _isAuthorized = false;
   }
 
   void setToken(String tkn) {
