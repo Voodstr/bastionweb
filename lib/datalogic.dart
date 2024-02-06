@@ -59,12 +59,11 @@ class DataLogic {
       '{"Фамилия":"Иванов","Имя":"Петр","Отчество":null}]';
 
   Future<bool> login(String login, String pwd) async {
-    /*if(kDebugMode){  //TODO remove test implementation LOGIN
+    if(kDebugMode){  //TODO remove test implementation LOGIN
       _isAuthorized = true;
       return true;
     }else{
 
-     */
     try {
       final response = await http.post(Uri.parse(postgresAddress + loginLink),
           headers: {"Content-Type": "application/json"},
@@ -84,7 +83,7 @@ class DataLogic {
       _isAuthorized = false;
       return Future.error('error caught: $e');
     }
-  //}
+    }
   }
 
   void logout(){

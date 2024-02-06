@@ -1,3 +1,4 @@
+import 'package:bastionweb/widgets/fields/passportwidget.dart';
 import 'package:bastionweb/widgets/fields/titledcard.dart';
 import 'package:flutter/material.dart';
 import 'fields/dateintervalwidget.dart';
@@ -15,8 +16,17 @@ class _RequestWidgetState extends State<RequestWidget> {
   TextEditingController surnameController = TextEditingController();
   TextEditingController middleNameController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
+
+  TextEditingController serialNumberController= TextEditingController();
+  DateTime passportDate = DateTime.now();
+  TextEditingController departmentNameController= TextEditingController();
+
   DateTime bd = DateTime.now();
   DateTime ed = DateTime.now();
+
+  void selectPassportDate(DateTime dateTime){
+    passportDate =dateTime;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +53,13 @@ class _RequestWidgetState extends State<RequestWidget> {
                         surnameController: surnameController,
                         nameController: nameController,
                         middleNameController: middleNameController)),
+                Flexible(
+                    flex: 1,
+                    fit: FlexFit.loose,
+                    child: PassportWidget(
+                        serialNumberController: serialNumberController,
+                        selectDate: selectPassportDate,
+                        departmentNameController: departmentNameController)),
                 Flexible(
                     flex: 1,
                     fit: FlexFit.loose,

@@ -15,7 +15,8 @@ class FioWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return Container(
+        padding: EdgeInsets.all(10),
         child: MediaQuery.of(context).size.width > 650
             ? TitledCard(
                 color: Theme.of(context).primaryColorDark,
@@ -28,7 +29,8 @@ class FioWidget extends StatelessWidget {
                         fit: FlexFit.loose,
                         flex: 1,
                         child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 2),
                             child: TextField(
                               controller: surnameController,
                               decoration: const InputDecoration(
@@ -39,7 +41,8 @@ class FioWidget extends StatelessWidget {
                         fit: FlexFit.loose,
                         flex: 1,
                         child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 2),
                             child: TextField(
                               controller: nameController,
                               decoration: const InputDecoration(
@@ -50,7 +53,8 @@ class FioWidget extends StatelessWidget {
                         fit: FlexFit.loose,
                         flex: 1,
                         child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 2),
                             child: TextField(
                               controller: middleNameController,
                               decoration: const InputDecoration(
