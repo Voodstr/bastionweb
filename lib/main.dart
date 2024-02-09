@@ -106,10 +106,10 @@ class _MainWidgetState extends State<MainWidget> {
     List<MainView> mainViewList = [
       MainView("Список персон", PersonsWidget(dataLogic: widget.dataLogic),
           const Icon(Icons.person)),
-      MainView("Cоздание заявки", const RequestWidget(),
+      MainView("Cоздание заявки",  RequestWidget(dataLogic: widget.dataLogic),
           const Icon(Icons.request_page)),
       MainView(
-          "Просмотр заявок", const RequestListWidget(), const Icon(Icons.list))
+          "Просмотр заявок",  RequestListWidget(dataLogic: widget.dataLogic, ), const Icon(Icons.list))
     ];
     var loginTextController = TextEditingController();
     var pwdTextController = TextEditingController();
@@ -268,15 +268,7 @@ class _MainWidgetState extends State<MainWidget> {
                               child: mainViewList[_selectedWindow].widget)),
                       Flexible(
                           flex: 1,
-                          fit: FlexFit.tight,
-                          child: Container(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                      "Документация: ${mainViewList[_selectedWindow].title}")
-                                ],
-                              ))),
+                          fit: FlexFit.tight, child: Text(""),),
                     ],
                   )
                 : mainViewList[_selectedWindow].widget,
